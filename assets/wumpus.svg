@@ -1,39 +1,60 @@
-<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <!-- Wumpus Monster - Green with tentacles -->
-  <!-- Main body -->
-  <ellipse cx="32" cy="35" rx="20" ry="18" fill="#6BBF59" stroke="#4A8C3D" stroke-width="2"/>
+<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main body - rounded rectangle -->
+  <ellipse cx="100" cy="120" rx="70" ry="80" fill="#5EC962" stroke="#3d8b3d" stroke-width="3"/>
   
-  <!-- Head -->
-  <circle cx="32" cy="18" r="12" fill="#7FCD6D" stroke="#4A8C3D" stroke-width="2"/>
+  <!-- Head area -->
+  <ellipse cx="100" cy="50" rx="60" ry="55" fill="#6fd36f" stroke="#3d8b3d" stroke-width="2"/>
   
-  <!-- Large eye -->
-  <circle cx="32" cy="18" r="7" fill="#E8F5E9" stroke="#4A8C3D" stroke-width="1.5"/>
-  <circle cx="32" cy="18" r="5" fill="#00695C"/>
-  <circle cx="33" cy="17" r="2.5" fill="#FFFFFF"/>
+  <!-- Large eye white -->
+  <circle cx="100" cy="45" r="35" fill="#e8f5e9" stroke="#2d5a2d" stroke-width="2"/>
   
-  <!-- Mouth - smile -->
-  <path d="M 26 22 Q 32 25 38 22" fill="none" stroke="#2D5A2D" stroke-width="2" stroke-linecap="round"/>
+  <!-- Iris - dark teal/green -->
+  <circle cx="100" cy="45" r="22" fill="#00897b"/>
   
-  <!-- Teeth -->
-  <line x1="28" y1="23" x2="28" y2="25" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round"/>
-  <line x1="32" y1="24" x2="32" y2="26" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round"/>
-  <line x1="36" y1="23" x2="36" y2="25" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round"/>
+  <!-- Pupil - black -->
+  <circle cx="100" cy="45" r="14" fill="#000000"/>
   
-  <!-- Left tentacles -->
-  <path d="M 16 32 Q 12 30 10 35" fill="none" stroke="#6BBF59" stroke-width="4" stroke-linecap="round"/>
-  <path d="M 16 38 Q 8 38 6 43" fill="none" stroke="#6BBF59" stroke-width="4" stroke-linecap="round"/>
-  <path d="M 16 44 Q 10 48 8 52" fill="none" stroke="#6BBF59" stroke-width="4" stroke-linecap="round"/>
+  <!-- Eye shine/highlight -->
+  <circle cx="108" cy="38" r="6" fill="#ffffff" opacity="0.9"/>
   
-  <!-- Right tentacles -->
-  <path d="M 48 32 Q 52 30 54 35" fill="none" stroke="#6BBF59" stroke-width="4" stroke-linecap="round"/>
-  <path d="M 48 38 Q 56 38 58 43" fill="none" stroke="#6BBF59" stroke-width="4" stroke-linecap="round"/>
-  <path d="M 48 44 Q 54 48 56 52" fill="none" stroke="#6BBF59" stroke-width="4" stroke-linecap="round"/>
+  <!-- Mouth -->
+  <path d="M 75 70 Q 100 85 125 70" stroke="#2d5a2d" stroke-width="3" fill="none" stroke-linecap="round"/>
   
-  <!-- Tentacle suckers -->
-  <circle cx="10" cy="35" r="2" fill="#4A8C3D"/>
-  <circle cx="6" cy="43" r="2" fill="#4A8C3D"/>
-  <circle cx="8" cy="52" r="2" fill="#4A8C3D"/>
-  <circle cx="54" cy="35" r="2" fill="#4A8C3D"/>
-  <circle cx="58" cy="43" r="2" fill="#4A8C3D"/>
-  <circle cx="56" cy="52" r="2" fill="#4A8C3D"/>
+  <!-- Teeth - top row -->
+  <rect x="78" y="68" width="6" height="8" fill="#ffffff" rx="1"/>
+  <rect x="87" y="70" width="6" height="10" fill="#ffffff" rx="1"/>
+  <rect x="96" y="72" width="6" height="12" fill="#ffffff" rx="1"/>
+  <rect x="105" y="72" width="6" height="12" fill="#ffffff" rx="1"/>
+  <rect x="114" y="70" width="6" height="10" fill="#ffffff" rx="1"/>
+  <rect x="123" y="68" width="6" height="8" fill="#ffffff" rx="1"/>
+  
+  <!-- Left ear/antenna -->
+  <ellipse cx="55" cy="25" rx="18" ry="25" fill="#5ec962" stroke="#3d8b3d" stroke-width="2" transform="rotate(-35 55 25)"/>
+  
+  <!-- Right ear/antenna -->
+  <ellipse cx="145" cy="25" rx="18" ry="25" fill="#5ec962" stroke="#3d8b3d" stroke-width="2" transform="rotate(35 145 25)"/>
+  
+  <!-- Left tentacle 1 -->
+  <path d="M 50 100 Q 30 95 25 120" stroke="#5ec962" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <circle cx="25" cy="120" r="8" fill="#3d8b3d"/>
+  
+  <!-- Left tentacle 2 -->
+  <path d="M 45 140 Q 20 140 10 160" stroke="#5ec962" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <circle cx="10" cy="160" r="8" fill="#3d8b3d"/>
+  
+  <!-- Left tentacle 3 -->
+  <path d="M 50 180 Q 30 195 25 220" stroke="#5ec962" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <circle cx="25" cy="220" r="8" fill="#3d8b3d"/>
+  
+  <!-- Right tentacle 1 -->
+  <path d="M 150 100 Q 170 95 175 120" stroke="#5ec962" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <circle cx="175" cy="120" r="8" fill="#3d8b3d"/>
+  
+  <!-- Right tentacle 2 -->
+  <path d="M 155 140 Q 180 140 190 160" stroke="#5ec962" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <circle cx="190" cy="160" r="8" fill="#3d8b3d"/>
+  
+  <!-- Right tentacle 3 -->
+  <path d="M 150 180 Q 170 195 175 220" stroke="#5ec962" stroke-width="20" fill="none" stroke-linecap="round"/>
+  <circle cx="175" cy="220" r="8" fill="#3d8b3d"/>
 </svg>
