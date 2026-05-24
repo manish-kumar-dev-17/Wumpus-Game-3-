@@ -1,13 +1,20 @@
 <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <!-- Pit -->
-  <circle cx="32" cy="32" r="28" fill="#2c3e50" stroke="#1a252f" stroke-width="2"/>
-  <circle cx="32" cy="32" r="24" fill="#34495e"/>
+  <!-- Pit - dark black hole -->
+  <defs>
+    <radialGradient id="pitGradient" cx="35%" cy="35%">
+      <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+    </radialGradient>
+  </defs>
   
-  <!-- Depth effect -->
-  <ellipse cx="32" cy="28" rx="20" ry="8" fill="#1a252f" opacity="0.5"/>
+  <!-- Main pit circle -->
+  <circle cx="32" cy="32" r="28" fill="url(#pitGradient)" stroke="#0a0a0a" stroke-width="2"/>
   
-  <!-- Cracks -->
-  <path d="M 15 32 Q 20 35 25 32" fill="none" stroke="#7f8c8d" stroke-width="1.5"/>
-  <path d="M 40 28 Q 45 30 50 28" fill="none" stroke="#7f8c8d" stroke-width="1.5"/>
-  <path d="M 32 15 Q 35 20 32 25" fill="none" stroke="#7f8c8d" stroke-width="1.5"/>
+  <!-- Depth/shadow effect -->
+  <ellipse cx="32" cy="26" rx="22" ry="6" fill="#000000" opacity="0.4"/>
+  
+  <!-- Cracks for texture -->
+  <path d="M 15 32 Q 20 35 25 32" fill="none" stroke="#333333" stroke-width="1" opacity="0.6"/>
+  <path d="M 40 28 Q 45 30 50 28" fill="none" stroke="#333333" stroke-width="1" opacity="0.6"/>
+  <path d="M 32 15 Q 35 20 32 25" fill="none" stroke="#333333" stroke-width="1" opacity="0.6"/>
 </svg>
