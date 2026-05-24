@@ -1,0 +1,13 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pit -->
+  <circle cx="32" cy="32" r="28" fill="#2c3e50" stroke="#1a252f" stroke-width="2"/>
+  <circle cx="32" cy="32" r="24" fill="#34495e"/>
+  
+  <!-- Depth effect -->
+  <ellipse cx="32" cy="28" rx="20" ry="8" fill="#1a252f" opacity="0.5"/>
+  
+  <!-- Cracks -->
+  <path d="M 15 32 Q 20 35 25 32" fill="none" stroke="#7f8c8d" stroke-width="1.5"/>
+  <path d="M 40 28 Q 45 30 50 28" fill="none" stroke="#7f8c8d" stroke-width="1.5"/>
+  <path d="M 32 15 Q 35 20 32 25" fill="none" stroke="#7f8c8d" stroke-width="1.5"/>
+</svg>
