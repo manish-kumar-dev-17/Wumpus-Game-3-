@@ -1,11 +1,24 @@
 <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <!-- Gold star -->
-  <g transform="translate(32, 32)">
-    <!-- Outer star -->
-    <polygon points="0,-24 6,-8 24,-6 12,4 18,22 0,14 -18,22 -12,4 -24,-6 -6,-8" fill="#FFD700" stroke="#FFA500" stroke-width="1.5"/>
-    
-    <!-- Shine/highlight -->
-    <polygon points="0,-24 6,-8 24,-6 12,4" fill="#FFED4E" opacity="0.6"/>
-    <circle cx="-5" cy="-8" r="3" fill="#FFFF99" opacity="0.7"/>
-  </g>
+  <!-- Treasure Chest with gold coins -->
+  <!-- Chest body -->
+  <ellipse cx="32" cy="28" rx="22" ry="16" fill="#CD853F" stroke="#8B4513" stroke-width="2"/>
+  <rect x="10" y="28" width="44" height="20" fill="#8B4513"/>
+  
+  <!-- Chest lid -->
+  <path d="M 10 28 Q 10 12 32 8 Q 54 12 54 28" fill="#D2691E" stroke="#8B4513" stroke-width="2"/>
+  <ellipse cx="32" cy="28" rx="22" ry="8" fill="#CD853F" stroke="#8B4513" stroke-width="1.5"/>
+  
+  <!-- Gold coins in chest -->
+  <circle cx="18" cy="35" r="4" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+  <circle cx="28" cy="32" r="4" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+  <circle cx="38" cy="34" r="4" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+  <circle cx="48" cy="36" r="4" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+  <circle cx="23" cy="42" r="4" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+  <circle cx="35" cy="43" r="4" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+  <circle cx="45" cy="44" r="4" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+  
+  <!-- Spilled coins -->
+  <circle cx="12" cy="52" r="3.5" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+  <circle cx="22" cy="54" r="3.5" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
+  <circle cx="52" cy="53" r="3.5" fill="#FFD700" stroke="#FFA500" stroke-width="0.5"/>
 </svg>
