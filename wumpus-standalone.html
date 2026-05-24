@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wumpus World Simulation</title>
+  <style>
+:root {
+  color-scheme: dark;
+  --ink: #f6f1e8;
+  --muted: #aaa49a;
+  --panel: #191c1d;
+  --panel-2: #222628;
+  --line: #363a3d;
+  --tile: #293035;
+  --tile-seen: #3a4544;
+  --accent: #f2c14e;
+  --danger: #df5b57;
+  --safe: #5abf90;
+  --water: #65a6d9;
+  --shadow: rgba(0, 0, 0, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    linear-gradient(rgba(7, 10, 10, 0.62), rgba(7, 10, 10, 0.82)),
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZ2xvdyIgY3g9IjQ1JSIgY3k9IjM2JSIgcj0iNzAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNTQ2MTViIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC40OCIgc3RvcC1jb2xvcj0iIzJkMzczOCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxMDE1MTYiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImNyYWNrIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzc3ODE3YyIgc3RvcC1vcGFjaXR5PSIuNDUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTExIiBzdG9wLW9wYWNpdHk9Ii4wNSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIGZpbGw9InVybCgjZ2xvdykiLz4KICA8cGF0aCBkPSJNMjggMTExYzUxIDIwIDk1IDEwIDEzNC0yMiAzNyA0NCA5MCA0OSAxNTYgMTUgMzQgNTEgODMgNzIgMTUxIDU1IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NDcwNmEiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLW9wYWNpdHk9Ii4yNyIvPgogIDxwYXRoIGQ9Ik02MSAzNzljNDUtMjkgODctMzUgMTI4LTE4IDQ5IDIxIDkyIDcgMTMwLTQzIDM4IDMxIDgyIDQzIDEzMiAzNyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDUwNzA3IiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2Utb3BhY2l0eT0iLjMzIi8+CiAgPHBhdGggZD0iTTEwNiAzOGw0NCA4MC0zMSA3NCA2MiA2NS0zNyAxMTggNTggODdNMzk3IDQybC04MiA3NSAxOSA5MS02NyA1NCAzMyA4MC03NSAxMTkiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNjcmFjaykiIHN0cm9rZS13aWR0aD0iNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGNpcmNsZSBjeD0iOTIiIGN5PSIyNzkiIHI9IjE3IiBmaWxsPSIjMTExNzE3IiBvcGFjaXR5PSIuNSIvPgogIDxjaXJjbGUgY3g9IjQyMSIgY3k9IjI5MiIgcj0iMjMiIGZpbGw9IiMxMDE1MTYiIG9wYWNpdHk9Ii41NiIvPgogIDxjaXJjbGUgY3g9IjM1MSIgY3k9IjQyNyIgcj0iMTMiIGZpbGw9IiM3Njg2N2UiIG9wYWNpdHk9Ii4xOCIvPgogIDxjaXJjbGUgY3g9IjI1MiIgY3k9IjEzMyIgcj0iMTAiIGZpbGw9IiNjYmI2N2EiIG9wYWNpdHk9Ii4xNiIvPgo8L3N2Zz4K") center / 520px,
+    radial-gradient(circle at 14% 18%, rgba(242, 193, 78, 0.12), transparent 26rem),
+    linear-gradient(135deg, #111718 0%, #17191d 48%, #211916 100%);
+}
+
+button {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--ink);
+  background: #2a2f33;
+  min-height: 2.45rem;
+  padding: 0 0.9rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  border-color: #667077;
+  background: #343a3f;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.app {
+  width: min(1180px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 24px 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1,
+h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+h1 {
+  font-size: clamp(2rem, 4.5vw, 4.4rem);
+  line-height: 0.95;
+  overflow-wrap: anywhere;
+  text-shadow: 0 5px 18px rgba(0, 0, 0, 0.5);
+}
+
+h2 {
+  font-size: 0.95rem;
+  color: #d7d2ca;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.subtitle {
+  max-width: 38rem;
+  margin: 10px 0 0;
+  color: #d5cbb7;
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.actions button:first-child {
+  background: #52472b;
+  border-color: #7b6732;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) 360px;
+  gap: 18px;
+  align-items: start;
+  min-width: 0;
+}
+
+.board-panel,
+.side-panel {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(25, 28, 29, 0.88);
+  box-shadow: 0 18px 60px var(--shadow);
+}
+
+.board-panel {
+  padding: clamp(10px, 2vw, 18px);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(66px, 1fr));
+  gap: clamp(7px, 1.6vw, 12px);
+  aspect-ratio: 1;
+}
+
+.cell {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-width: 0;
+  min-height: 0;
+  padding: clamp(6px, 1.2vw, 10px);
+  overflow: hidden;
+  border: 1px solid #30383b;
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent 55%),
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZ2xvdyIgY3g9IjQ1JSIgY3k9IjM2JSIgcj0iNzAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNTQ2MTViIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC40OCIgc3RvcC1jb2xvcj0iIzJkMzczOCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxMDE1MTYiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImNyYWNrIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzc3ODE3YyIgc3RvcC1vcGFjaXR5PSIuNDUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTExIiBzdG9wLW9wYWNpdHk9Ii4wNSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIGZpbGw9InVybCgjZ2xvdykiLz4KICA8cGF0aCBkPSJNMjggMTExYzUxIDIwIDk1IDEwIDEzNC0yMiAzNyA0NCA5MCA0OSAxNTYgMTUgMzQgNTEgODMgNzIgMTUxIDU1IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NDcwNmEiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLW9wYWNpdHk9Ii4yNyIvPgogIDxwYXRoIGQ9Ik02MSAzNzljNDUtMjkgODctMzUgMTI4LTE4IDQ5IDIxIDkyIDcgMTMwLTQzIDM4IDMxIDgyIDQzIDEzMiAzNyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDUwNzA3IiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2Utb3BhY2l0eT0iLjMzIi8+CiAgPHBhdGggZD0iTTEwNiAzOGw0NCA4MC0zMSA3NCA2MiA2NS0zNyAxMTggNTggODdNMzk3IDQybC04MiA3NSAxOSA5MS02NyA1NCAzMyA4MC03NSAxMTkiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNjcmFjaykiIHN0cm9rZS13aWR0aD0iNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGNpcmNsZSBjeD0iOTIiIGN5PSIyNzkiIHI9IjE3IiBmaWxsPSIjMTExNzE3IiBvcGFjaXR5PSIuNSIvPgogIDxjaXJjbGUgY3g9IjQyMSIgY3k9IjI5MiIgcj0iMjMiIGZpbGw9IiMxMDE1MTYiIG9wYWNpdHk9Ii41NiIvPgogIDxjaXJjbGUgY3g9IjM1MSIgY3k9IjQyNyIgcj0iMTMiIGZpbGw9IiM3Njg2N2UiIG9wYWNpdHk9Ii4xOCIvPgogIDxjaXJjbGUgY3g9IjI1MiIgY3k9IjEzMyIgcj0iMTAiIGZpbGw9IiNjYmI2N2EiIG9wYWNpdHk9Ii4xNiIvPgo8L3N2Zz4K") center / cover,
+    var(--tile);
+}
+
+.cell.unseen {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.03), transparent 58%),
+    #111617;
+}
+
+.cell.seen {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 58%),
+    url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZGVmcz4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0iZ2xvdyIgY3g9IjQ1JSIgY3k9IjM2JSIgcj0iNzAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNTQ2MTViIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMC40OCIgc3RvcC1jb2xvcj0iIzJkMzczOCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMxMDE1MTYiLz4KICAgIDwvcmFkaWFsR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImNyYWNrIiB4MT0iMCIgeDI9IjEiIHkxPSIwIiB5Mj0iMSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzc3ODE3YyIgc3RvcC1vcGFjaXR5PSIuNDUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTExIiBzdG9wLW9wYWNpdHk9Ii4wNSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIGZpbGw9InVybCgjZ2xvdykiLz4KICA8cGF0aCBkPSJNMjggMTExYzUxIDIwIDk1IDEwIDEzNC0yMiAzNyA0NCA5MCA0OSAxNTYgMTUgMzQgNTEgODMgNzIgMTUxIDU1IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NDcwNmEiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLW9wYWNpdHk9Ii4yNyIvPgogIDxwYXRoIGQ9Ik02MSAzNzljNDUtMjkgODctMzUgMTI4LTE4IDQ5IDIxIDkyIDcgMTMwLTQzIDM4IDMxIDgyIDQzIDEzMiAzNyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDUwNzA3IiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2Utb3BhY2l0eT0iLjMzIi8+CiAgPHBhdGggZD0iTTEwNiAzOGw0NCA4MC0zMSA3NCA2MiA2NS0zNyAxMTggNTggODdNMzk3IDQybC04MiA3NSAxOSA5MS02NyA1NCAzMyA4MC03NSAxMTkiIGZpbGw9Im5vbmUiIHN0cm9rZT0idXJsKCNjcmFjaykiIHN0cm9rZS13aWR0aD0iNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPGNpcmNsZSBjeD0iOTIiIGN5PSIyNzkiIHI9IjE3IiBmaWxsPSIjMTExNzE3IiBvcGFjaXR5PSIuNSIvPgogIDxjaXJjbGUgY3g9IjQyMSIgY3k9IjI5MiIgcj0iMjMiIGZpbGw9IiMxMDE1MTYiIG9wYWNpdHk9Ii41NiIvPgogIDxjaXJjbGUgY3g9IjM1MSIgY3k9IjQyNyIgcj0iMTMiIGZpbGw9IiM3Njg2N2UiIG9wYWNpdHk9Ii4xOCIvPgogIDxjaXJjbGUgY3g9IjI1MiIgY3k9IjEzMyIgcj0iMTAiIGZpbGw9IiNjYmI2N2EiIG9wYWNpdHk9Ii4xNiIvPgo8L3N2Zz4K") center / cover,
+    var(--tile-seen);
+}
+
+.cell.current {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 2px rgba(242, 193, 78, 0.5);
+}
+
+.coord {
+  position: relative;
+  z-index: 3;
+  color: var(--muted);
+  font-size: clamp(0.62rem, 1.2vw, 0.75rem);
+  font-weight: 700;
+}
+
+.effects {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.icons {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-height: 0;
+}
+
+.sprite {
+  display: block;
+  width: clamp(2.6rem, 9vw, 5.8rem);
+  height: clamp(2.6rem, 9vw, 5.8rem);
+  object-fit: contain;
+  filter: drop-shadow(0 9px 9px rgba(0, 0, 0, 0.55));
+}
+
+.sprite.explorer {
+  width: clamp(2.5rem, 8.4vw, 5.4rem);
+  height: clamp(2.5rem, 8.4vw, 5.4rem);
+}
+
+.sprite.explorer.north {
+  transform: rotate(0deg);
+}
+
+.sprite.explorer.east {
+  transform: rotate(90deg);
+}
+
+.sprite.explorer.south {
+  transform: rotate(180deg);
+}
+
+.sprite.explorer.west {
+  transform: rotate(270deg);
+}
+
+.sprite.wumpus {
+  width: clamp(3rem, 9.6vw, 6.5rem);
+  height: clamp(3rem, 9.6vw, 6.5rem);
+}
+
+.sprite.pit {
+  width: clamp(3rem, 9vw, 6rem);
+  height: clamp(3rem, 9vw, 6rem);
+}
+
+.sprite.gold {
+  width: clamp(2rem, 6.8vw, 4.5rem);
+  height: clamp(2rem, 6.8vw, 4.5rem);
+}
+
+.sprite.breeze,
+.sprite.stench {
+  position: absolute;
+  width: 76%;
+  height: 76%;
+  opacity: 0.48;
+  filter: blur(0.2px) drop-shadow(0 0 10px rgba(150, 220, 255, 0.3));
+}
+
+.sprite.stench {
+  width: 70%;
+  height: 70%;
+  opacity: 0.42;
+  filter: blur(0.1px) drop-shadow(0 0 12px rgba(139, 224, 113, 0.38));
+}
+
+.badges {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-height: 1.15rem;
+}
+
+.badge,
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.45rem;
+  min-height: 1.25rem;
+  border: 1px solid #4c5357;
+  border-radius: 999px;
+  padding: 0 0.42rem;
+  color: #d8dee1;
+  background: rgba(0, 0, 0, 0.2);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.badge.safe {
+  border-color: rgba(90, 191, 144, 0.7);
+  color: #bdebd7;
+}
+
+.badge.risk {
+  border-color: rgba(223, 91, 87, 0.7);
+  color: #ffc5c3;
+}
+
+.side-panel {
+  padding: 16px;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.status-grid div {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--panel-2);
+}
+
+.status-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.status-grid strong {
+  display: block;
+  overflow-wrap: anywhere;
+  margin-top: 3px;
+  font-size: 1.05rem;
+}
+
+.control-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.control-pad .wide {
+  grid-column: span 3;
+}
+
+.panel-block {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  margin-top: 14px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 2rem;
+  margin-top: 8px;
+}
+
+.chip {
+  border-color: #596267;
+  color: var(--ink);
+  background: #2b3435;
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 7px;
+  color: #e8e1d5;
+  background: #1d2224;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.legend img {
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.memory {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.memory-cell {
+  min-width: 0;
+  min-height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px;
+  color: var(--muted);
+  background: #171b1d;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.memory-cell.visited {
+  color: #cce8da;
+  border-color: rgba(90, 191, 144, 0.55);
+}
+
+.memory-cell.frontier {
+  color: #ffe2a0;
+  border-color: rgba(242, 193, 78, 0.55);
+}
+
+.log {
+  display: grid;
+  gap: 7px;
+  max-height: 12rem;
+  overflow: auto;
+  padding-left: 1.25rem;
+  margin: 8px 0 0;
+  color: #d6d0c5;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 860px) {
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .actions {
+    justify-content: flex-start;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .side-panel {
+    order: -1;
+  }
+}
+
+@media (max-width: 460px) {
+  .app {
+    width: min(100vw - 20px, 1180px);
+    padding: 12px 0;
+  }
+
+  .board {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .cell {
+    padding: 5px;
+  }
+
+  .actions button {
+    flex: 1 1 30%;
+    padding-inline: 0.5rem;
+  }
+
+  h1 {
+    font-size: clamp(1.75rem, 10vw, 2.35rem);
+  }
+
+  .memory-cell {
+    font-size: 0.64rem;
+    padding-inline: 3px;
+  }
+}
+
+/* Reference image theme */
+:root {
+  color-scheme: light;
+  --ink: #111;
+  --muted: #148f00;
+  --panel: #ffffff;
+  --panel-2: #f4f4f4;
+  --line: #111;
+  --accent: #08a000;
+  --danger: #f01824;
+  --safe: #10a000;
+  --shadow: rgba(0, 0, 0, 0.12);
+}
+
+body {
+  color: var(--ink);
+  background: #ffffff;
+}
+
+button,
+.source-link {
+  border: 4px solid #111;
+  border-radius: 0;
+  color: #0b8f00;
+  background: #fff;
+  box-shadow: 5px 5px 0 #111;
+}
+
+button:hover,
+.source-link:hover {
+  color: #fff;
+  background: #0b9f00;
+  border-color: #0b9f00;
+}
+
+.source-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.45rem;
+  padding: 0 0.9rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.actions button:first-child {
+  color: #fff;
+  background: #0b9f00;
+  border-color: #0b9f00;
+}
+
+.eyebrow,
+.subtitle,
+h2 {
+  color: #0b9f00;
+}
+
+h1 {
+  color: #111;
+  text-shadow: none;
+}
+
+.layout {
+  grid-template-columns: minmax(500px, 1fr) 390px;
+}
+
+.board-panel,
+.side-panel {
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+}
+
+.board-panel {
+  padding: 0;
+}
+
+.reference-board {
+  display: grid;
+  grid-template-columns: clamp(2.4rem, 6vw, 4.6rem) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.y-axis {
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  height: min(68vw, 730px);
+  max-height: calc(100vh - 210px);
+  min-height: 420px;
+  padding-top: 2px;
+}
+
+.x-axis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding-top: 8px;
+}
+
+.y-axis span,
+.x-axis span {
+  color: #00d43f;
+  font-size: clamp(2.3rem, 6vw, 5rem);
+  line-height: 1;
+  font-weight: 950;
+}
+
+.y-axis span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.x-axis span {
+  text-align: center;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  width: 100%;
+  height: min(68vw, 730px);
+  max-height: calc(100vh - 210px);
+  min-height: 420px;
+  aspect-ratio: 1;
+  border: 6px solid #050505;
+  background: #fff;
+}
+
+.cell {
+  display: block;
+  border: 4px solid #050505;
+  border-radius: 0;
+  background: #fff;
+  overflow: hidden;
+  padding: 0;
+}
+
+.cell.seen,
+.cell.unseen {
+  background: #fff;
+}
+
+.cell.current {
+  border-color: #050505;
+  box-shadow: inset 0 0 0 8px rgba(0, 212, 63, 0.22);
+}
+
+.effects {
+  inset: 10px 8px auto 8px;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(4px, 1vw, 12px);
+  pointer-events: none;
+}
+
+.percept-marker {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 950;
+  line-height: 0.88;
+}
+
+.percept-marker .waves {
+  font-size: clamp(1.7rem, 4vw, 3.6rem);
+  letter-spacing: 0;
+}
+
+.percept-marker strong {
+  font-size: clamp(3.5rem, 8vw, 7.2rem);
+  letter-spacing: 0;
+}
+
+.percept-marker.breeze {
+  color: #f01824;
+}
+
+.percept-marker.stench {
+  color: #0b9f00;
+}
+
+.icons {
+  position: absolute;
+  inset: 18% 8% 8%;
+  z-index: 2;
+}
+
+.sprite {
+  width: clamp(4rem, 9vw, 8.2rem);
+  height: clamp(4rem, 9vw, 8.2rem);
+  filter: none;
+}
+
+.sprite.explorer {
+  width: clamp(4.6rem, 10vw, 9.4rem);
+  height: clamp(4.6rem, 10vw, 9.4rem);
+  transform: none !important;
+}
+
+.sprite.wumpus {
+  width: clamp(4.5rem, 9vw, 8.8rem);
+  height: clamp(4.5rem, 9vw, 8.8rem);
+}
+
+.sprite.pit {
+  width: clamp(4.2rem, 8.5vw, 8rem);
+  height: clamp(4.2rem, 8.5vw, 8rem);
+}
+
+.sprite.gold {
+  width: clamp(4.6rem, 9.6vw, 9rem);
+  height: clamp(4.6rem, 9.6vw, 9rem);
+}
+
+.badges {
+  display: none;
+}
+
+.side-panel {
+  padding: 8px 0 0 8px;
+}
+
+.status-grid div,
+.memory-cell,
+.legend span {
+  border: 4px solid #111;
+  border-radius: 0;
+  background: #fff;
+}
+
+.status-grid span,
+.memory-cell,
+.log {
+  color: #111;
+}
+
+.status-grid strong,
+.chip {
+  color: #0b9f00;
+}
+
+.control-pad button {
+  box-shadow: 4px 4px 0 #111;
+}
+
+.panel-block {
+  border-top: 5px solid #111;
+}
+
+.chip {
+  border: 3px solid #111;
+  border-radius: 0;
+  background: #fff;
+}
+
+.legend {
+  grid-template-columns: 1fr;
+}
+
+.legend span {
+  min-height: 4.8rem;
+  border-width: 0;
+  color: #0b9f00;
+  background: #fff;
+  font-size: clamp(1.2rem, 2.5vw, 2.6rem);
+  font-weight: 950;
+}
+
+.legend span::before {
+  content: "";
+  width: clamp(2rem, 5vw, 4rem);
+  height: 5px;
+  margin-right: clamp(0.5rem, 1.5vw, 1.5rem);
+  background: #111;
+}
+
+.legend img {
+  width: clamp(3rem, 7vw, 6rem);
+  height: clamp(3rem, 7vw, 6rem);
+  order: -1;
+}
+
+.legend-mark {
+  display: grid !important;
+  grid-template-columns: auto auto 1fr;
+  column-gap: 16px;
+}
+
+.legend-mark::before {
+  order: 2;
+}
+
+.legend-mark.breeze-mark {
+  color: #f01824;
+}
+
+.legend-mark.stench-mark {
+  color: #0b9f00;
+}
+
+.legend-mark b {
+  font-size: clamp(2.6rem, 6vw, 5rem);
+}
+
+@media (max-width: 980px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .side-panel {
+    order: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .reference-board {
+    grid-template-columns: 2.1rem minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .board,
+  .y-axis {
+    min-height: 310px;
+    height: calc(100vw - 68px);
+  }
+
+  .y-axis span,
+  .x-axis span {
+    font-size: 2.2rem;
+  }
+
+  .percept-marker .waves {
+    font-size: 1.05rem;
+  }
+
+  .percept-marker strong {
+    font-size: 2.3rem;
+  }
+
+  .sprite,
+  .sprite.explorer,
+  .sprite.wumpus,
+  .sprite.pit,
+  .sprite.gold {
+    width: 3.6rem;
+    height: 3.6rem;
+  }
+}
+
+</style>
+</head>
+<body>
+  <main class="app">
+    <section class="topbar" aria-label="Simulation controls">
+      <div>
+        <p class="eyebrow">Wumpus World</p>
+        <h1>Wumpus Game Board</h1>
+        <p class="subtitle">A playable version styled like your reference diagram.</p>
+      </div>
+      <div class="actions">
+        <a class="source-link" href="#" title="Publish this file online to make a public source link">Open Source</a>
+        <button id="newGameBtn" type="button">New Cave</button>
+        <button id="autoBtn" type="button" aria-pressed="false">Run Agent</button>
+        <button id="stepBtn" type="button">Step</button>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="board-panel">
+        <div class="reference-board">
+          <div class="y-axis" aria-hidden="true">
+            <span>4</span>
+            <span>3</span>
+            <span>2</span>
+            <span>1</span>
+          </div>
+          <div>
+            <div id="board" class="board" aria-label="Wumpus cave grid"></div>
+            <div class="x-axis" aria-hidden="true">
+              <span>1</span>
+              <span>2</span>
+              <span>3</span>
+              <span>4</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side-panel" aria-label="Simulation status">
+        <div class="status-grid">
+          <div>
+            <span>Score</span>
+            <strong id="score">0</strong>
+          </div>
+          <div>
+            <span>Arrow</span>
+            <strong id="arrowState">Ready</strong>
+          </div>
+          <div>
+            <span>Facing</span>
+            <strong id="facing">East</strong>
+          </div>
+          <div>
+            <span>Status</span>
+            <strong id="gameState">Exploring</strong>
+          </div>
+        </div>
+
+        <div class="control-pad" aria-label="Movement controls">
+          <button id="turnLeftBtn" type="button" title="Turn left">L</button>
+          <button id="moveBtn" type="button" title="Move forward">Move</button>
+          <button id="turnRightBtn" type="button" title="Turn right">R</button>
+          <button id="shootBtn" class="wide" type="button" title="Shoot arrow">Shoot</button>
+          <button id="grabBtn" class="wide" type="button" title="Grab gold">Grab</button>
+        </div>
+
+        <div class="panel-block">
+          <h2>Percepts</h2>
+          <div id="percepts" class="chips"></div>
+        </div>
+
+        <div class="panel-block">
+          <h2>Cave Legend</h2>
+          <div class="legend">
+            <span><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2Ij4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI4IiBzdGREZXZpYXRpb249IjUiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuMjgiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8Y2lyY2xlIGN4PSIxMjgiIGN5PSIxMjgiIHI9Ijg4IiBmaWxsPSIjMDAwIiBmaWx0ZXI9InVybCgjc2hhZG93KSIvPgo8L3N2Zz4K" alt=""> Pit</span>
+            <span><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2Ij4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyIgeD0iLTI1JSIgeT0iLTI1JSIgd2lkdGg9IjE1MCUiIGhlaWdodD0iMTUwJSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI4IiBzdGREZXZpYXRpb249IjUiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuMjUiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8ZyBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8cGF0aCBkPSJNNjQgNzFjMC0yMyAxOC00MiA0MS00Mmg0NmMyMyAwIDQxIDE5IDQxIDQydjEwM2MwIDM3LTI4IDU5LTY0IDU5cy02NC0yMi02NC01OXoiIGZpbGw9IiM2NGJlN2IiLz4KICAgIDxjaXJjbGUgY3g9IjEyOCIgY3k9IjEwMCIgcj0iNDUiIGZpbGw9IiNmNWZiZmIiLz4KICAgIDxjaXJjbGUgY3g9IjEyOCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiM0ZjY0NzAiLz4KICAgIDxjaXJjbGUgY3g9IjEyOCIgY3k9IjEwMCIgcj0iOCIgZmlsbD0iIzE0MTQxNCIvPgogICAgPHBhdGggZD0iTTc2IDEwMWMtMjMtMTQtNDQtMTEtNTEgMi02IDEyIDQgMjggMjcgMjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzY0YmU3YiIgc3Ryb2tlLXdpZHRoPSIxOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNMTgwIDEwMWMyMy0xNCA0NC0xMSA1MSAyIDYgMTItNCAyOC0yNyAyNyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjRiZTdiIiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik05MSAxNDhjMjIgMjYgNTIgMjYgNzQgMCIgZmlsbD0iI2ZmZiIvPgogICAgPHBhdGggZD0iTTk0IDE0N2wxMyAyNiAxMy0yNk0xMzYgMTQ3bDEzIDI2IDEzLTI2IiBmaWxsPSIjZmZmIi8+CiAgICA8Y2lyY2xlIGN4PSI3NSIgY3k9IjIxNiIgcj0iMTIiIGZpbGw9IiM1NTUiLz4KICAgIDxjaXJjbGUgY3g9IjE4MSIgY3k9IjIxNiIgcj0iMTIiIGZpbGw9IiM1NTUiLz4KICAgIDxwYXRoIGQ9Ik02MyAyMjNsMzgtNU0xNTUgMjE4bDM4IDUiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSI5IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8L2c+Cjwvc3ZnPgo=" alt=""> Wumpus</span>
+            <span><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2Ij4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyIgeD0iLTI1JSIgeT0iLTI1JSIgd2lkdGg9IjE1MCUiIGhlaWdodD0iMTUwJSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI4IiBzdGREZXZpYXRpb249IjUiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuMjUiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8ZyBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8cGF0aCBkPSJNNDQgMTA0bDgzLTMzIDg1IDM0djg0bC04NCAzNS04NC0zNXoiIGZpbGw9IiNmZmM0MDAiLz4KICAgIDxwYXRoIGQ9Ik00NCAxMDRsODQgMzMgODQtMzItODQtMzJ6IiBmaWxsPSIjZmZkZjM3Ii8+CiAgICA8cGF0aCBkPSJNNDQgMTA0djg1bDg0IDM1di04N3oiIGZpbGw9IiNmZmIwMDAiLz4KICAgIDxwYXRoIGQ9Ik0yMTIgMTA1djg0bC04NCAzNXYtODd6IiBmaWxsPSIjZjRhMDAwIi8+CiAgICA8cGF0aCBkPSJNNzggOTVWNTRsMTAyLTMxdjU3bC01MiAyMnoiIGZpbGw9IiNmZmIwMDAiLz4KICAgIDxwYXRoIGQ9Ik05MiA2NWw3NS0yMnYyN2wtNzUgMjR6IiBmaWxsPSIjOWE1MTE3Ii8+CiAgICA8ZWxsaXBzZSBjeD0iMTI3IiBjeT0iMTUzIiByeD0iNDciIHJ5PSIxNiIgZmlsbD0iI2ZmZWQ1OCIvPgogICAgPGNpcmNsZSBjeD0iMTAxIiBjeT0iMTUwIiByPSIxMCIgZmlsbD0iI2ZmZDAwMCIvPgogICAgPGNpcmNsZSBjeD0iMTIzIiBjeT0iMTU4IiByPSIxMCIgZmlsbD0iI2ZmZDAwMCIvPgogICAgPGNpcmNsZSBjeD0iMTQ2IiBjeT0iMTQ4IiByPSIxMCIgZmlsbD0iI2ZmZDAwMCIvPgogICAgPHBhdGggZD0iTTE4NiAyMDJsMjggNU0xOTcgMTgzbDIyLTZNMTY2IDIxNmwyMCAxNyIgc3Ryb2tlPSIjZmZjYzAwIiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8L2c+Cjwvc3ZnPgo=" alt=""> Treasure</span>
+            <span><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2Ij4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyIgeD0iLTI1JSIgeT0iLTI1JSIgd2lkdGg9IjE1MCUiIGhlaWdodD0iMTUwJSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI4IiBzdGREZXZpYXRpb249IjUiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuMjQiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8ZyBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8cmVjdCB4PSI2MyIgeT0iMzMiIHdpZHRoPSIxMzAiIGhlaWdodD0iNjIiIHJ4PSIyNCIgZmlsbD0iIzU1ZTRjOSIvPgogICAgPHJlY3QgeD0iNzgiIHk9IjQ1IiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjM4IiByeD0iMTUiIGZpbGw9IiM2NjYiLz4KICAgIDxjaXJjbGUgY3g9IjEwNSIgY3k9IjY0IiByPSIxNyIgZmlsbD0iIzVmZjBkZSIvPgogICAgPGNpcmNsZSBjeD0iMTUxIiBjeT0iNjQiIHI9IjE3IiBmaWxsPSIjNWZmMGRlIi8+CiAgICA8Y2lyY2xlIGN4PSIxMDUiIGN5PSI2NCIgcj0iOCIgZmlsbD0iIzJkMzc0MCIvPgogICAgPGNpcmNsZSBjeD0iMTUxIiBjeT0iNjQiIHI9IjgiIGZpbGw9IiMyZDM3NDAiLz4KICAgIDxwYXRoIGQ9Ik0xMjggOTV2MzQiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSIxMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNNzEgMTM0bC0zNiAzOU0xODUgMTM0bDM2IDM5IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMTYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTM1IDE3M2wtMTgtMTdNMzUgMTczbC0xNiAxOU0yMjEgMTczbDE4LTE3TTIyMSAxNzNsMTYgMTkiIHN0cm9rZT0iIzU1ZTRjOSIgc3Ryb2tlLXdpZHRoPSIxMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNNzggMTI0aDEwMGwxNCA4N0g2NHoiIGZpbGw9IiM1NWU0YzkiLz4KICAgIDxyZWN0IHg9Ijk0IiB5PSIxNDYiIHdpZHRoPSI2OCIgaGVpZ2h0PSIzNCIgcng9IjUiIGZpbGw9IiM4ZDlkOWIiIHN0cm9rZT0iIzU2NTY1NiIgc3Ryb2tlLXdpZHRoPSI1Ii8+CiAgICA8cGF0aCBkPSJNMTAxIDE2NWwxMS0xMCA4IDE4IDExLTI0IDEwIDE4IDgtNyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTlmNWYyIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPGNpcmNsZSBjeD0iMTAzIiBjeT0iMTk1IiByPSI3IiBmaWxsPSIjNTU1Ii8+CiAgICA8Y2lyY2xlIGN4PSIxMjUiIGN5PSIxOTUiIHI9IjciIGZpbGw9IiM1NTUiLz4KICAgIDxwYXRoIGQ9Ik05MSAyMTF2MjVNMTY1IDIxMXYyNSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik03NyAyMzloMzVsLTE4LTIwek0xNDQgMjM5aDM1bC0xOC0yMHoiIGZpbGw9IiM1NWU0YzkiLz4KICA8L2c+Cjwvc3ZnPgo=" alt=""> Agent</span>
+            <span class="legend-mark breeze-mark">~~~ <b>B</b></span>
+            <span class="legend-mark stench-mark">~~~ <b>S</b></span>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <h2>Agent Memory</h2>
+          <div id="memory" class="memory"></div>
+        </div>
+
+        <div class="panel-block">
+          <h2>Event Log</h2>
+          <ol id="log" class="log"></ol>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+const SIZE = 4;
+const START = { x: 0, y: 0 };
+const DIRS = [
+  { name: "North", key: "north", dx: 0, dy: -1 },
+  { name: "East", key: "east", dx: 1, dy: 0 },
+  { name: "South", key: "south", dx: 0, dy: 1 },
+  { name: "West", key: "west", dx: -1, dy: 0 }
+];
+
+const ASSETS = {
+  explorer: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2Ij4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyIgeD0iLTI1JSIgeT0iLTI1JSIgd2lkdGg9IjE1MCUiIGhlaWdodD0iMTUwJSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI4IiBzdGREZXZpYXRpb249IjUiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuMjQiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8ZyBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8cmVjdCB4PSI2MyIgeT0iMzMiIHdpZHRoPSIxMzAiIGhlaWdodD0iNjIiIHJ4PSIyNCIgZmlsbD0iIzU1ZTRjOSIvPgogICAgPHJlY3QgeD0iNzgiIHk9IjQ1IiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjM4IiByeD0iMTUiIGZpbGw9IiM2NjYiLz4KICAgIDxjaXJjbGUgY3g9IjEwNSIgY3k9IjY0IiByPSIxNyIgZmlsbD0iIzVmZjBkZSIvPgogICAgPGNpcmNsZSBjeD0iMTUxIiBjeT0iNjQiIHI9IjE3IiBmaWxsPSIjNWZmMGRlIi8+CiAgICA8Y2lyY2xlIGN4PSIxMDUiIGN5PSI2NCIgcj0iOCIgZmlsbD0iIzJkMzc0MCIvPgogICAgPGNpcmNsZSBjeD0iMTUxIiBjeT0iNjQiIHI9IjgiIGZpbGw9IiMyZDM3NDAiLz4KICAgIDxwYXRoIGQ9Ik0xMjggOTV2MzQiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSIxMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNNzEgMTM0bC0zNiAzOU0xODUgMTM0bDM2IDM5IiBzdHJva2U9IiM1NTUiIHN0cm9rZS13aWR0aD0iMTYiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPHBhdGggZD0iTTM1IDE3M2wtMTgtMTdNMzUgMTczbC0xNiAxOU0yMjEgMTczbDE4LTE3TTIyMSAxNzNsMTYgMTkiIHN0cm9rZT0iIzU1ZTRjOSIgc3Ryb2tlLXdpZHRoPSIxMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNNzggMTI0aDEwMGwxNCA4N0g2NHoiIGZpbGw9IiM1NWU0YzkiLz4KICAgIDxyZWN0IHg9Ijk0IiB5PSIxNDYiIHdpZHRoPSI2OCIgaGVpZ2h0PSIzNCIgcng9IjUiIGZpbGw9IiM4ZDlkOWIiIHN0cm9rZT0iIzU2NTY1NiIgc3Ryb2tlLXdpZHRoPSI1Ii8+CiAgICA8cGF0aCBkPSJNMTAxIDE2NWwxMS0xMCA4IDE4IDExLTI0IDEwIDE4IDgtNyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZTlmNWYyIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgPGNpcmNsZSBjeD0iMTAzIiBjeT0iMTk1IiByPSI3IiBmaWxsPSIjNTU1Ii8+CiAgICA8Y2lyY2xlIGN4PSIxMjUiIGN5PSIxOTUiIHI9IjciIGZpbGw9IiM1NTUiLz4KICAgIDxwYXRoIGQ9Ik05MSAyMTF2MjVNMTY1IDIxMXYyNSIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjEyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik03NyAyMzloMzVsLTE4LTIwek0xNDQgMjM5aDM1bC0xOC0yMHoiIGZpbGw9IiM1NWU0YzkiLz4KICA8L2c+Cjwvc3ZnPgo=",
+  wumpus: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2Ij4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyIgeD0iLTI1JSIgeT0iLTI1JSIgd2lkdGg9IjE1MCUiIGhlaWdodD0iMTUwJSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI4IiBzdGREZXZpYXRpb249IjUiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuMjUiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8ZyBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8cGF0aCBkPSJNNjQgNzFjMC0yMyAxOC00MiA0MS00Mmg0NmMyMyAwIDQxIDE5IDQxIDQydjEwM2MwIDM3LTI4IDU5LTY0IDU5cy02NC0yMi02NC01OXoiIGZpbGw9IiM2NGJlN2IiLz4KICAgIDxjaXJjbGUgY3g9IjEyOCIgY3k9IjEwMCIgcj0iNDUiIGZpbGw9IiNmNWZiZmIiLz4KICAgIDxjaXJjbGUgY3g9IjEyOCIgY3k9IjEwMCIgcj0iMjAiIGZpbGw9IiM0ZjY0NzAiLz4KICAgIDxjaXJjbGUgY3g9IjEyOCIgY3k9IjEwMCIgcj0iOCIgZmlsbD0iIzE0MTQxNCIvPgogICAgPHBhdGggZD0iTTc2IDEwMWMtMjMtMTQtNDQtMTEtNTEgMi02IDEyIDQgMjggMjcgMjciIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzY0YmU3YiIgc3Ryb2tlLXdpZHRoPSIxOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8cGF0aCBkPSJNMTgwIDEwMWMyMy0xNCA0NC0xMSA1MSAyIDYgMTItNCAyOC0yNyAyNyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjRiZTdiIiBzdHJva2Utd2lkdGg9IjE4IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxwYXRoIGQ9Ik05MSAxNDhjMjIgMjYgNTIgMjYgNzQgMCIgZmlsbD0iI2ZmZiIvPgogICAgPHBhdGggZD0iTTk0IDE0N2wxMyAyNiAxMy0yNk0xMzYgMTQ3bDEzIDI2IDEzLTI2IiBmaWxsPSIjZmZmIi8+CiAgICA8Y2lyY2xlIGN4PSI3NSIgY3k9IjIxNiIgcj0iMTIiIGZpbGw9IiM1NTUiLz4KICAgIDxjaXJjbGUgY3g9IjE4MSIgY3k9IjIxNiIgcj0iMTIiIGZpbGw9IiM1NTUiLz4KICAgIDxwYXRoIGQ9Ik02MyAyMjNsMzgtNU0xNTUgMjE4bDM4IDUiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSI5IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8L2c+Cjwvc3ZnPgo=",
+  pit: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2Ij4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyIgeD0iLTIwJSIgeT0iLTIwJSIgd2lkdGg9IjE0MCUiIGhlaWdodD0iMTQwJSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI4IiBzdGREZXZpYXRpb249IjUiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuMjgiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8Y2lyY2xlIGN4PSIxMjgiIGN5PSIxMjgiIHI9Ijg4IiBmaWxsPSIjMDAwIiBmaWx0ZXI9InVybCgjc2hhZG93KSIvPgo8L3N2Zz4K",
+  gold: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTYgMjU2Ij4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9InNoYWRvdyIgeD0iLTI1JSIgeT0iLTI1JSIgd2lkdGg9IjE1MCUiIGhlaWdodD0iMTUwJSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI4IiBzdGREZXZpYXRpb249IjUiIGZsb29kLWNvbG9yPSIjMDAwIiBmbG9vZC1vcGFjaXR5PSIuMjUiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8ZyBmaWx0ZXI9InVybCgjc2hhZG93KSI+CiAgICA8cGF0aCBkPSJNNDQgMTA0bDgzLTMzIDg1IDM0djg0bC04NCAzNS04NC0zNXoiIGZpbGw9IiNmZmM0MDAiLz4KICAgIDxwYXRoIGQ9Ik00NCAxMDRsODQgMzMgODQtMzItODQtMzJ6IiBmaWxsPSIjZmZkZjM3Ii8+CiAgICA8cGF0aCBkPSJNNDQgMTA0djg1bDg0IDM1di04N3oiIGZpbGw9IiNmZmIwMDAiLz4KICAgIDxwYXRoIGQ9Ik0yMTIgMTA1djg0bC04NCAzNXYtODd6IiBmaWxsPSIjZjRhMDAwIi8+CiAgICA8cGF0aCBkPSJNNzggOTVWNTRsMTAyLTMxdjU3bC01MiAyMnoiIGZpbGw9IiNmZmIwMDAiLz4KICAgIDxwYXRoIGQ9Ik05MiA2NWw3NS0yMnYyN2wtNzUgMjR6IiBmaWxsPSIjOWE1MTE3Ii8+CiAgICA8ZWxsaXBzZSBjeD0iMTI3IiBjeT0iMTUzIiByeD0iNDciIHJ5PSIxNiIgZmlsbD0iI2ZmZWQ1OCIvPgogICAgPGNpcmNsZSBjeD0iMTAxIiBjeT0iMTUwIiByPSIxMCIgZmlsbD0iI2ZmZDAwMCIvPgogICAgPGNpcmNsZSBjeD0iMTIzIiBjeT0iMTU4IiByPSIxMCIgZmlsbD0iI2ZmZDAwMCIvPgogICAgPGNpcmNsZSBjeD0iMTQ2IiBjeT0iMTQ4IiByPSIxMCIgZmlsbD0iI2ZmZDAwMCIvPgogICAgPHBhdGggZD0iTTE4NiAyMDJsMjggNU0xOTcgMTgzbDIyLTZNMTY2IDIxNmwyMCAxNyIgc3Ryb2tlPSIjZmZjYzAwIiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8L2c+Cjwvc3ZnPgo=",
+  breeze: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMTYwIj4KICA8cGF0aCBkPSJNMTkgNTVjMzUtMjEgNDcgMTcgNzQgMCAxMi03IDIyLTEzIDQyLTgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhlZDZmZiIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggZD0iTTI2IDkxYzI5LTE1IDQzIDEyIDY2LTEgMTQtOCAyNS0xMCA0Mi00IiBmaWxsPSJub25lIiBzdHJva2U9IiNkNGYxZmYiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuODUiLz4KICA8cGF0aCBkPSJNNDUgMTE5YzIwLTggMzIgNiA1MS0zIiBmaWxsPSJub25lIiBzdHJva2U9IiM4ZWQ2ZmYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuNyIvPgo8L3N2Zz4K",
+  stench: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMTYwIj4KICA8cGF0aCBkPSJNNDcgMTMyYy0yMS0yMyAxNC0zNy0yLTU4LTE1LTE5LTQtMzMgMTQtNDYiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzhkZTA3MSIgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgPHBhdGggZD0iTTg4IDEzM2MtMTktMjUgMTEtMzgtMy01OC0xMy0xOC0yLTMyIDEyLTQ4IiBmaWxsPSJub25lIiBzdHJva2U9IiNjM2Y2NmMiIHN0cm9rZS13aWR0aD0iOSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuOSIvPgogIDxwYXRoIGQ9Ik0xMjEgMTIxYy0xMy0xOCA3LTMxLTQtNDUtOS0xMiAwLTI1IDEwLTM2IiBmaWxsPSJub25lIiBzdHJva2U9IiM3YmM5NWYiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBvcGFjaXR5PSIuOCIvPgo8L3N2Zz4K"
+};
+
+const REVEAL_WORLD = true;
+const USE_REFERENCE_LAYOUT = true;
+
+const boardEl = document.querySelector("#board");
+const logEl = document.querySelector("#log");
+const perceptsEl = document.querySelector("#percepts");
+const memoryEl = document.querySelector("#memory");
+const scoreEl = document.querySelector("#score");
+const arrowStateEl = document.querySelector("#arrowState");
+const facingEl = document.querySelector("#facing");
+const gameStateEl = document.querySelector("#gameState");
+const autoBtn = document.querySelector("#autoBtn");
+
+let state;
+let autoTimer = null;
+
+function key(pos) {
+  return `${pos.x},${pos.y}`;
+}
+
+function same(a, b) {
+  return a.x === b.x && a.y === b.y;
+}
+
+function inBounds(pos) {
+  return pos.x >= 0 && pos.x < SIZE && pos.y >= 0 && pos.y < SIZE;
+}
+
+function neighbors(pos) {
+  return DIRS
+    .map(dir => ({ x: pos.x + dir.dx, y: pos.y + dir.dy }))
+    .filter(inBounds);
+}
+
+function randomCell(blocked) {
+  const options = [];
+  for (let y = 0; y < SIZE; y += 1) {
+    for (let x = 0; x < SIZE; x += 1) {
+      const pos = { x, y };
+      if (!blocked.has(key(pos))) options.push(pos);
+    }
+  }
+  return options[Math.floor(Math.random() * options.length)];
+}
+
+function createWorld() {
+  if (USE_REFERENCE_LAYOUT) {
+    return {
+      wumpus: { x: 0, y: 2 },
+      gold: { x: 1, y: 2 },
+      pits: new Set(["2,0", "2,2", "3,3"]),
+      wumpusAlive: true
+    };
+  }
+
+  const blocked = new Set([key(START), "1,0", "0,1"]);
+  const wumpus = randomCell(blocked);
+  blocked.add(key(wumpus));
+  const gold = randomCell(blocked);
+  blocked.add(key(gold));
+
+  const pits = new Set();
+  while (pits.size < 3) {
+    const pit = randomCell(blocked);
+    pits.add(key(pit));
+    blocked.add(key(pit));
+  }
+
+  return { wumpus, gold, pits, wumpusAlive: true };
+}
+
+function newGame() {
+  stopAuto();
+  state = {
+    world: createWorld(),
+    player: { ...START },
+    dir: 1,
+    score: 0,
+    hasArrow: true,
+    hasGold: false,
+    over: false,
+    won: false,
+    bumped: false,
+    screamed: false,
+    visited: new Set([key(START)]),
+    safe: new Set([key(START)]),
+    suspected: new Map(),
+    log: ["The explorer enters the cave at [1,1]."]
+  };
+  applyPercepts();
+  render();
+}
+
+function currentPercepts() {
+  const here = state.player;
+  const around = neighbors(here);
+  const world = state.world;
+  const hasPitNear = around.some(pos => world.pits.has(key(pos)));
+  const hasWumpusNear = world.wumpusAlive && around.some(pos => same(pos, world.wumpus));
+  const percepts = [];
+  if (hasPitNear) percepts.push("Breeze");
+  if (hasWumpusNear) percepts.push("Stench");
+  if (same(here, world.gold) && !state.hasGold) percepts.push("Glitter");
+  if (state.bumped) percepts.push("Bump");
+  if (state.screamed) percepts.push("Scream");
+  if (percepts.length === 0) percepts.push("Clear");
+  return percepts;
+}
+
+function applyPercepts() {
+  const percepts = currentPercepts();
+  const hereKey = key(state.player);
+  state.visited.add(hereKey);
+  state.safe.add(hereKey);
+
+  const clear = !percepts.includes("Breeze") && !percepts.includes("Stench");
+  for (const pos of neighbors(state.player)) {
+    const posKey = key(pos);
+    if (clear) {
+      state.safe.add(posKey);
+      state.suspected.delete(posKey);
+    } else if (!state.visited.has(posKey) && !state.safe.has(posKey)) {
+      const tags = state.suspected.get(posKey) || new Set();
+      if (percepts.includes("Breeze")) tags.add("P?");
+      if (percepts.includes("Stench")) tags.add("W?");
+      state.suspected.set(posKey, tags);
+    }
+  }
+}
+
+function addLog(message) {
+  state.log.unshift(message);
+  state.log = state.log.slice(0, 8);
+}
+
+function endGame(won, message) {
+  state.over = true;
+  state.won = won;
+  state.score += won ? 1000 : -1000;
+  addLog(message);
+  stopAuto();
+}
+
+function moveForward() {
+  if (state.over) return;
+  state.bumped = false;
+  state.screamed = false;
+  const dir = DIRS[state.dir];
+  const next = { x: state.player.x + dir.dx, y: state.player.y + dir.dy };
+  state.score -= 1;
+
+  if (!inBounds(next)) {
+    state.bumped = true;
+    addLog("The cave wall blocks the move.");
+    render();
+    return;
+  }
+
+  state.player = next;
+  addLog(`Moved to [${next.x + 1},${next.y + 1}].`);
+
+  if (state.world.pits.has(key(next))) {
+    endGame(false, "The explorer fell into a pit.");
+  } else if (state.world.wumpusAlive && same(next, state.world.wumpus)) {
+    endGame(false, "The Wumpus caught the explorer.");
+  } else if (state.hasGold && same(next, START)) {
+    endGame(true, "The explorer escaped with the gold.");
+  } else {
+    applyPercepts();
+  }
+  render();
+}
+
+function turn(amount) {
+  if (state.over) return;
+  state.bumped = false;
+  state.screamed = false;
+  state.dir = (state.dir + amount + DIRS.length) % DIRS.length;
+  state.score -= 1;
+  addLog(`Turned ${amount < 0 ? "left" : "right"}.`);
+  applyPercepts();
+  render();
+}
+
+function shoot() {
+  if (state.over || !state.hasArrow) return;
+  state.bumped = false;
+  state.screamed = false;
+  state.hasArrow = false;
+  state.score -= 10;
+  const dir = DIRS[state.dir];
+  let arrow = { ...state.player };
+
+  while (true) {
+    arrow = { x: arrow.x + dir.dx, y: arrow.y + dir.dy };
+    if (!inBounds(arrow)) break;
+    if (state.world.wumpusAlive && same(arrow, state.world.wumpus)) {
+      state.world.wumpusAlive = false;
+      state.screamed = true;
+      addLog("The arrow struck the Wumpus.");
+      applyPercepts();
+      render();
+      return;
+    }
+  }
+
+  addLog("The arrow vanished into the dark.");
+  applyPercepts();
+  render();
+}
+
+function grab() {
+  if (state.over || state.hasGold || !same(state.player, state.world.gold)) return;
+  state.bumped = false;
+  state.screamed = false;
+  state.hasGold = true;
+  state.score += 100;
+  addLog("Gold secured.");
+  if (same(state.player, START)) {
+    endGame(true, "The explorer escaped with the gold.");
+  }
+  render();
+}
+
+function maybeExit() {
+  if (state.hasGold && same(state.player, START)) {
+    endGame(true, "The explorer escaped with the gold.");
+    render();
+  }
+}
+
+function rotateToward(target) {
+  const dx = target.x - state.player.x;
+  const dy = target.y - state.player.y;
+  const targetDir = DIRS.findIndex(dir => dir.dx === Math.sign(dx) && dir.dy === Math.sign(dy));
+  if (targetDir === -1 || targetDir === state.dir) return false;
+  const rightSteps = (targetDir - state.dir + DIRS.length) % DIRS.length;
+  turn(rightSteps <= 2 ? 1 : -1);
+  return true;
+}
+
+function stepAgent() {
+  if (state.over) return;
+  const percepts = currentPercepts();
+
+  if (percepts.includes("Glitter")) {
+    grab();
+    return;
+  }
+
+  if (state.hasGold) {
+    const routeHome = bestPath(state.player, START, cell => state.visited.has(key(cell)) || state.safe.has(key(cell)));
+    if (routeHome.length > 1) {
+      moveAlong(routeHome[1]);
+    } else {
+      maybeExit();
+    }
+    return;
+  }
+
+  const safeFrontier = neighbors(state.player).find(pos => state.safe.has(key(pos)) && !state.visited.has(key(pos)));
+  if (safeFrontier) {
+    moveAlong(safeFrontier);
+    return;
+  }
+
+  const path = nearestSafeUnknown();
+  if (path.length > 1) {
+    moveAlong(path[1]);
+    return;
+  }
+
+  if (percepts.includes("Stench") && state.hasArrow) {
+    shoot();
+    return;
+  }
+
+  const retreat = bestPath(state.player, START, cell => state.visited.has(key(cell)));
+  if (retreat.length > 1) {
+    moveAlong(retreat[1]);
+  } else {
+    addLog("Agent paused: no safe frontier remains.");
+    stopAuto();
+    render();
+  }
+}
+
+function moveAlong(next) {
+  if (rotateToward(next)) return;
+  moveForward();
+}
+
+function nearestSafeUnknown() {
+  let best = [];
+  for (const safeKey of state.safe) {
+    if (state.visited.has(safeKey)) continue;
+    const [x, y] = safeKey.split(",").map(Number);
+    const path = bestPath(state.player, { x, y }, cell => state.safe.has(key(cell)));
+    if (path.length && (!best.length || path.length < best.length)) best = path;
+  }
+  return best;
+}
+
+function bestPath(from, to, passable) {
+  const queue = [[from]];
+  const seen = new Set([key(from)]);
+  while (queue.length) {
+    const path = queue.shift();
+    const last = path[path.length - 1];
+    if (same(last, to)) return path;
+    for (const next of neighbors(last)) {
+      const nextKey = key(next);
+      if (seen.has(nextKey) || !passable(next)) continue;
+      seen.add(nextKey);
+      queue.push([...path, next]);
+    }
+  }
+  return [];
+}
+
+function toggleAuto() {
+  if (autoTimer) {
+    stopAuto();
+    return;
+  }
+  autoBtn.textContent = "Pause Agent";
+  autoBtn.setAttribute("aria-pressed", "true");
+  autoTimer = window.setInterval(stepAgent, 650);
+}
+
+function stopAuto() {
+  if (autoTimer) window.clearInterval(autoTimer);
+  autoTimer = null;
+  autoBtn.textContent = "Run Agent";
+  autoBtn.setAttribute("aria-pressed", "false");
+}
+
+function render() {
+  renderBoard();
+  renderPanel();
+  renderMemory();
+}
+
+function renderBoard() {
+  boardEl.innerHTML = "";
+  for (let y = SIZE - 1; y >= 0; y -= 1) {
+    for (let x = 0; x < SIZE; x += 1) {
+      const pos = { x, y };
+      const posKey = key(pos);
+      const seen = state.visited.has(posKey) || REVEAL_WORLD;
+      const percepts = perceptsFor(pos);
+      const cell = document.createElement("div");
+      cell.className = `cell ${seen ? "seen" : "unseen"} ${same(pos, state.player) ? "current" : ""}`;
+
+      if (seen || state.over) {
+        const effects = document.createElement("div");
+        effects.className = "effects";
+        if (percepts.includes("Stench")) effects.append(marker("S", "stench", "Stench"));
+        if (percepts.includes("Breeze")) effects.append(marker("B", "breeze", "Breeze"));
+        cell.append(effects);
+      }
+
+      const icons = document.createElement("div");
+      icons.className = "icons";
+      if (seen || state.over) {
+        if (state.world.pits.has(posKey)) icons.append(sprite("pit", "Pit"));
+        if (!state.hasGold && same(pos, state.world.gold)) icons.append(sprite("gold", "Gold"));
+        if (state.world.wumpusAlive && same(pos, state.world.wumpus)) icons.append(sprite("wumpus", "Wumpus"));
+      }
+      if (same(pos, state.player)) icons.append(sprite("explorer", "Explorer", DIRS[state.dir].key));
+      cell.append(icons);
+
+      const badges = document.createElement("div");
+      badges.className = "badges";
+      if (state.safe.has(posKey)) badges.append(badge("Safe", "safe"));
+      if (state.suspected.has(posKey)) {
+        for (const label of state.suspected.get(posKey)) badges.append(badge(label, "risk"));
+      }
+      cell.append(badges);
+      boardEl.append(cell);
+    }
+  }
+}
+
+function marker(letter, type, label) {
+  const el = document.createElement("span");
+  el.className = `percept-marker ${type}`;
+  el.setAttribute("aria-label", label);
+  el.innerHTML = `<span class="waves">~~~</span><strong>${letter}</strong>`;
+  return el;
+}
+
+function perceptsFor(pos) {
+  const around = neighbors(pos);
+  const result = [];
+  if (around.some(next => state.world.pits.has(key(next)))) result.push("Breeze");
+  if (state.world.wumpusAlive && around.some(next => same(next, state.world.wumpus))) result.push("Stench");
+  return result;
+}
+
+function sprite(type, label, extra = "") {
+  const el = document.createElement("img");
+  el.className = `sprite ${type} ${extra}`;
+  el.src = ASSETS[type];
+  el.alt = label;
+  el.draggable = false;
+  return el;
+}
+
+function badge(label, type) {
+  const el = document.createElement("span");
+  el.className = `badge ${type}`;
+  el.textContent = label;
+  return el;
+}
+
+function renderPanel() {
+  scoreEl.textContent = state.score;
+  arrowStateEl.textContent = state.hasArrow ? "Ready" : "Spent";
+  facingEl.textContent = DIRS[state.dir].name;
+  gameStateEl.textContent = state.over ? (state.won ? "Escaped" : "Lost") : "Exploring";
+
+  perceptsEl.innerHTML = "";
+  for (const percept of currentPercepts()) {
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.textContent = percept;
+    perceptsEl.append(chip);
+  }
+
+  logEl.innerHTML = "";
+  for (const item of state.log) {
+    const li = document.createElement("li");
+    li.textContent = item;
+    logEl.append(li);
+  }
+
+  const disabled = state.over;
+  document.querySelector("#moveBtn").disabled = disabled;
+  document.querySelector("#turnLeftBtn").disabled = disabled;
+  document.querySelector("#turnRightBtn").disabled = disabled;
+  document.querySelector("#shootBtn").disabled = disabled || !state.hasArrow;
+  document.querySelector("#grabBtn").disabled = disabled || state.hasGold || !same(state.player, state.world.gold);
+  document.querySelector("#stepBtn").disabled = disabled;
+}
+
+function renderMemory() {
+  memoryEl.innerHTML = "";
+  for (let y = SIZE - 1; y >= 0; y -= 1) {
+    for (let x = 0; x < SIZE; x += 1) {
+      const posKey = `${x},${y}`;
+      const cell = document.createElement("div");
+      const isVisited = state.visited.has(posKey);
+      const isFrontier = state.safe.has(posKey) && !isVisited;
+      cell.className = `memory-cell ${isVisited ? "visited" : ""} ${isFrontier ? "frontier" : ""}`;
+      cell.textContent = isVisited ? "Seen" : isFrontier ? "Open" : state.suspected.has(posKey) ? [...state.suspected.get(posKey)].join(" ") : "--";
+      memoryEl.append(cell);
+    }
+  }
+}
+
+document.querySelector("#newGameBtn").addEventListener("click", newGame);
+document.querySelector("#moveBtn").addEventListener("click", moveForward);
+document.querySelector("#turnLeftBtn").addEventListener("click", () => turn(-1));
+document.querySelector("#turnRightBtn").addEventListener("click", () => turn(1));
+document.querySelector("#shootBtn").addEventListener("click", shoot);
+document.querySelector("#grabBtn").addEventListener("click", grab);
+document.querySelector("#stepBtn").addEventListener("click", stepAgent);
+autoBtn.addEventListener("click", toggleAuto);
+
+window.addEventListener("keydown", event => {
+  if (event.key === "ArrowUp") moveForward();
+  if (event.key === "ArrowLeft") turn(-1);
+  if (event.key === "ArrowRight") turn(1);
+  if (event.key.toLowerCase() === "s") shoot();
+  if (event.key.toLowerCase() === "g") grab();
+});
+
+newGame();
+
+</script>
+</body>
+</html>

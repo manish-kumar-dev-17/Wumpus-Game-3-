@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wumpus World Simulation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <section class="topbar" aria-label="Simulation controls">
+      <div>
+        <p class="eyebrow">Wumpus World</p>
+        <h1>Wumpus Game Board</h1>
+        <p class="subtitle">A playable version styled like your reference diagram.</p>
+      </div>
+      <div class="actions">
+        <a class="source-link" href="./wumpus-game-source.zip" download>Open Source</a>
+        <button id="newGameBtn" type="button">New Cave</button>
+        <button id="autoBtn" type="button" aria-pressed="false">Run Agent</button>
+        <button id="stepBtn" type="button">Step</button>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="board-panel">
+        <div class="reference-board">
+          <div class="y-axis" aria-hidden="true">
+            <span>4</span>
+            <span>3</span>
+            <span>2</span>
+            <span>1</span>
+          </div>
+          <div>
+            <div id="board" class="board" aria-label="Wumpus cave grid"></div>
+            <div class="x-axis" aria-hidden="true">
+              <span>1</span>
+              <span>2</span>
+              <span>3</span>
+              <span>4</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side-panel" aria-label="Simulation status">
+        <div class="status-grid">
+          <div>
+            <span>Score</span>
+            <strong id="score">0</strong>
+          </div>
+          <div>
+            <span>Arrow</span>
+            <strong id="arrowState">Ready</strong>
+          </div>
+          <div>
+            <span>Facing</span>
+            <strong id="facing">East</strong>
+          </div>
+          <div>
+            <span>Status</span>
+            <strong id="gameState">Exploring</strong>
+          </div>
+        </div>
+
+        <div class="control-pad" aria-label="Movement controls">
+          <button id="turnLeftBtn" type="button" title="Turn left">L</button>
+          <button id="moveBtn" type="button" title="Move forward">Move</button>
+          <button id="turnRightBtn" type="button" title="Turn right">R</button>
+          <button id="shootBtn" class="wide" type="button" title="Shoot arrow">Shoot</button>
+          <button id="grabBtn" class="wide" type="button" title="Grab gold">Grab</button>
+        </div>
+
+        <div class="panel-block">
+          <h2>Percepts</h2>
+          <div id="percepts" class="chips"></div>
+        </div>
+
+        <div class="panel-block">
+          <h2>Cave Legend</h2>
+          <div class="legend">
+            <span><img src="assets/pit.svg" alt=""> Pit</span>
+            <span><img src="assets/wumpus.svg" alt=""> Wumpus</span>
+            <span><img src="assets/gold.svg" alt=""> Treasure</span>
+            <span><img src="assets/explorer.svg" alt=""> Agent</span>
+            <span class="legend-mark breeze-mark">~~~ <b>B</b></span>
+            <span class="legend-mark stench-mark">~~~ <b>S</b></span>
+          </div>
+        </div>
+
+        <div class="panel-block">
+          <h2>Agent Memory</h2>
+          <div id="memory" class="memory"></div>
+        </div>
+
+        <div class="panel-block">
+          <h2>Event Log</h2>
+          <ol id="log" class="log"></ol>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
